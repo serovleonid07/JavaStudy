@@ -22,8 +22,6 @@ public class Lab1Var17 {
     /**
      * Сортировка очереди по возрастанию сортировкой вставками,
      * работая напрямую со связным списком (без массива и без новых узлов).
-     *
-     * Идея:
      *   - sorted — голова уже отсортированной части (изначально null);
      *   - cur    — текущий узел из исходного списка;
      *   - для каждого cur ищем место в sorted и вставляем.
@@ -63,7 +61,6 @@ public class Lab1Var17 {
 
     /**
      * Является ли строка целым числом (возможен минус).
-     * Своя реализация — без Integer.parseInt и без try/catch.
      */
     private static boolean isInteger(String s) {
         if (s == null || s.isEmpty()) return false;
@@ -96,7 +93,6 @@ public class Lab1Var17 {
 
     // ================== ВВОД БЕЗ СТОРОННИХ БИБЛИОТЕК ==================
 
-    /** Читает одну строку из System.in побайтово. null — конец потока. */
     private static String readLine() {
         StringBuilder sb = new StringBuilder();
         try {
@@ -122,33 +118,52 @@ public class Lab1Var17 {
     private static Queue readQueue(String prompt) {
         Queue queue = new Queue();
         System.out.println(prompt);
-        System.out.print("Введите целые числа через пробел: ");
+        System.out.println("(для выхода без ввода введите 'exit')");
 
-        String line = readLine();
-        if (line == null || line.trim().isEmpty()) {
-            System.out.println("Пустая строка — очередь останется пустой.");
-            return queue;
-        }
+        while (true) {
+            System.out.print("> ");
 
-        // Ручное разбиение на токены (без String.split)
-        StringBuilder token = new StringBuilder();
-        for (int i = 0; i <= line.length(); i++) {
-            char c = (i < line.length()) ? line.charAt(i) : ' '; // виртуальный пробел в конце
-            if (c == ' ' || c == '\t') {
-                if (token.length() > 0) {
-                    String t = token.toString();
-                    if (isInteger(t)) {
-                        queue.enqueue(stringToInt(t));
-                    } else {
-                        System.out.println("Пропущено (не число): \"" + t + "\"");
-                    }
-                    token.setLength(0);
-                }
-            } else {
-                token.append(c);
+            String line = readLine();
+            if (line == null) {
+                System.out.println("Ввод завершён.");
+                return queue;
             }
+
+            String trimmed = line.trim();
+            if (trimmed.equals("exit")) {
+                System.out.println("Выход без ввода. Очередь пуста.");
+                return queue;
+            }
+
+            if (trimmed.isEmpty()) {
+                System.out.println("Пустая строка. Введите числа или 'exit'.");
+                continue;
+            }
+
+            // Разбор токенов
+            StringBuilder token = new StringBuilder();
+            for (int i = 0; i <= line.length(); i++) {
+                char c = (i < line.length()) ? line.charAt(i) : ' ';
+                if (c == ' ' || c == '\t') {
+                    if (token.length() > 0) {
+                        String t = token.toString();
+                        if (isInteger(t)) {
+                            queue.enqueue(stringToInt(t));
+                        } else {
+                            System.out.println("Пропущено (не число): \"" + t + "\"");
+                        }
+                        token.setLength(0);
+                    }
+                } else {
+                    token.append(c);
+                }
+            }
+
+            if (!queue.isEmpty()) {
+                return queue; // есть хотя бы одно число — выходим
+            }
+            System.out.println("Ни одного числа не введено. Попробуйте снова или введите 'exit'.");
         }
-        return queue;
     }
 
     // ================== MAIN ==================
